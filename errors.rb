@@ -1,0 +1,3 @@
+class StartingPosition < Exception
+
+end

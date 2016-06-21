@@ -28,4 +28,9 @@ class Piece
     return true if self.same_color?(@board[x, y])
   end
 
+  def reset_possible_moves
+    @possible_moves = []
+    moves
+  end
+
 end

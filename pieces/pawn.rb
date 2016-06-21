@@ -6,27 +6,29 @@ class Pawn < Piece
     @move_dir = color == :black ? 1 : -1
   end
 
-  def move
+  def moves
+    possible_moves = []
     x, y = @position
     regular_move = [delta_move[0] + x, delta_move[1] + y]
-    @possible_moves << regular_move unless obstruction?(regular_move)
+    possible_moves << regular_move unless obstruction?(regular_move)
 
     delta_attack.each do |dx, dy|
-      @possible_moves << [dx + x, dy + y] if check_for_opponent?([dx + x, dy + y])
+      possible_moves << [dx + x, dy + y] if check_for_opponent?([dx + x, dy + y])
     end
+    possible_moves
   end
 
   def delta_move
-    [[@move_dir, 0]]
+    [@move_dir, 0]
   end
 
   def delta_attack
     [ [@move_dir, -1], [@move_dir, 1] ]
   end
 
-  def check_for_opponent(x, y)
-    unless @board[[x, y]].nil?
-      return self.other_color?(@board[[x, y]])
+  def check_for_opponent?(pos)
+    unless @board[pos].nil?
+      return self.other_color?(@board[pos])
     end
     false
   end

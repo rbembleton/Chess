@@ -1,9 +1,11 @@
 class SteppingPiece < Piece
 
-  def move
+  def moves
+    possible_moves = []
     x, y = @position
     deltas.each do |dx, dy|
-      @possible_moves << [dx + x, dy + y] unless obstruction?(dx + x, dy + y)
+      possible_moves << [dx + x, dy + y] unless obstruction?(dx + x, dy + y)
     end
+    possible_moves
   end
 end

@@ -38,15 +38,22 @@ class Board
 
   end
 
+  def move!(start_pos, end_pos)
+    @previous_move = [start_pos, end_pos]
+    self[start_pos], self[end_pos] = nil, self[start_pos]
+    self[end_pos].position = end_pos
+  end
+
   def move(start_pos, end_pos)
     begin
+      # p "S: #{start_pos}  E: #{end_pos}"
       valid_move?(start_pos, end_pos)
     rescue # StartingPosition => e
       # retry
     end
     @previous_move = [start_pos, end_pos]
-    @grid[start_pos], @grid[end_pos] = nil, @grid[start_pos]
-    @grid[end_pos].position = end_pos
+    self[start_pos], self[end_pos] = nil, self[start_pos]
+    self[end_pos].position = end_pos
   end
 
   def undo_last_move
@@ -55,10 +62,14 @@ class Board
   end
 
   def valid_move?(start_pos, end_pos)
+    # debugger
+    # p "S: #{start_pos}  E: #{end_pos}"
+    # p self[start_pos].valid_moves#.include?(end_pos)
+    self[start_pos].valid_moves.include?(end_pos)
 
-    if self[start_pos].nil?
-      raise StartingPosition.new ("There is no piece there")
-    end
+    # if self[start_pos].nil?
+    #   raise StartingPosition.new ("There is no piece there")
+    # end
     # self[start].valid_move?
 
   end
@@ -71,7 +82,7 @@ class Board
     pos_king = find_king(current_color)
     other_color = current_color == :black ? :white : :black
     pieces_in_play(other_color).any? do |piece|
-      return true if piece.possible_moves.include?(pos_king)
+      return true if piece.moves.include?(pos_king)
     end
     false
   end
@@ -97,7 +108,7 @@ class Board
   end
 
   def pieces_in_play(color)
-    @grid.flatten.select {|piece| piece.color == color}
+    @grid.flatten.compact.select {|piece| piece.color == color}
   end
 
 end

@@ -1,25 +1,26 @@
 class Piece
-  attr_reader :position, :board, :color, :icon, :possible_moves
+  attr_accessor :position
+  attr_reader :board, :color, :icon
 
   def initialize(position, board, color)
     @position = position
     @board = board
     @color = color
-    @possible_moves = []
   end
 
   def moves
-    #ducktyping
+    raise "moves must be implemented in the child class"
   end
 
   def valid_moves
     temp_valid_moves = []
-    @possible_moves.each do |move|
-      @board.move(self.position, move)
-      temp_valid_moves << @board.in_check?(self.color)
+    # p "P: #{self.position}"
+    moves.each do |move|
+      @board.move!(self.position, move)
+      temp_valid_moves << move #unless @board.in_check?(self.color)
       @board.undo_last_move
     end
-    @possible_moves = temp_valid_moves
+    temp_valid_moves
   end
 
   def same_color?(other_piece)
@@ -32,15 +33,10 @@ class Piece
     self.color != other_piece.color
   end
 
-  def obstruction?(x, y)
-    return false unless x.between?(0,7) && y.between?(0,7)
-    return false if @board[x, y].nil?
-    return true if self.same_color?(@board[x, y])
+  def obstruction?(pos)
+    x, y = pos
+    return false unless x.between?(0, 7) && y.between?(0, 7)
+    return false if @board[pos].nil?
+    return true if self.same_color?(@board[pos])
   end
-
-  def reset_possible_moves
-    @possible_moves = []
-    moves
-  end
-
 end

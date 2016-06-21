@@ -31,10 +31,10 @@ class Display
       end
       render_str += "\n"
     end
-    system("clear")
+    # system("clear")
     # debugger
     puts render_str
-    get_input
+    # get_input
   end
 
 end

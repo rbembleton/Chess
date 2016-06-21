@@ -31,6 +31,10 @@ class Board
     pos.all? { |x| x.between?(0, 7) }
   end
 
+  def in_check?(color)
+    
+  end
+
   def [](pos)
     x, y = pos
     @grid[x][y]

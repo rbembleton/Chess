@@ -2,7 +2,7 @@ class Queen < SlidingPiece
 
   def initialize(position, board, color)
     super(position, board, color)
-    @icon = {:white => "♕", :black =>"♛"}
+    @icon = "♛"
   end
 
   def move_dirs

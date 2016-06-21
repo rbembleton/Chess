@@ -22,4 +22,10 @@ class Piece
     self.color != other_piece.color
   end
 
+  def obstruction?(x, y)
+    return false unless x.between?(0,7) && y.between?(0,7)
+    return false if @board[x, y].nil?
+    return true if self.same_color?(@board[x, y])
+  end
+
 end

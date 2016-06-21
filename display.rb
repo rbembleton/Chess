@@ -16,17 +16,19 @@ class Display
     @board.grid.each_with_index do |row, idx|
       render_str += "#{idx} "
       row.each_with_index do |tile, idx2|
+          
+        background = (idx + idx2).even? ? :light_black : :light_white
+
         if [idx, idx2] == cursor_pos
-          # debugger
-          render_str += "  ".colorize(:background => :red) if (idx + idx2).even?
-          render_str += "  ".colorize(:background => :light_red) if (idx + idx2).odd?
-        elsif tile.nil?
-          render_str += "  ".colorize(:background => :light_black) if (idx + idx2).even?
-          render_str += "  ".colorize(:background => :light_white) if (idx + idx2).odd?
-        else
-          render_str += "__".colorize(:blue)
-          # render_str += tile.to_s
+          background = (idx + idx2).even? ? :red : :light_red
         end
+
+        if tile.nil?
+          render_str += "  ".colorize(:background => background)
+        else
+          render_str += (tile.icon + " ").colorize(:color => tile.color, :background => background)
+        end
+
       end
       render_str += "\n"
     end
@@ -39,7 +41,10 @@ class Display
 end
 
 b = Board.new
+q = Queen.new( [0,0] , b, :white)
+b[[0,0]] = q
 d = Display.new(b)
+
 # debugger
 while true
   d.render

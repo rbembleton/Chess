@@ -15,4 +15,9 @@ class King < SteppingPiece
     [ 0, -1],
     [ 0,  1]
   ]
+
+  def deltas
+    DELTAS
+  end
+  
 end

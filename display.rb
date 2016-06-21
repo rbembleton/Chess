@@ -1,5 +1,4 @@
 require "colorize"
-require_relative 'required'
 require 'byebug'
 
 class Display
@@ -16,7 +15,7 @@ class Display
     @board.grid.each_with_index do |row, idx|
       render_str += "#{idx} "
       row.each_with_index do |tile, idx2|
-          
+
         background = (idx + idx2).even? ? :light_black : :light_white
 
         if [idx, idx2] == cursor_pos
@@ -38,14 +37,4 @@ class Display
     get_input
   end
 
-end
-
-b = Board.new
-q = Queen.new( [0,0] , b, :white)
-b[[0,0]] = q
-d = Display.new(b)
-
-# debugger
-while true
-  d.render
 end

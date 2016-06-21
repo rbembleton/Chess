@@ -9,7 +9,17 @@ class Piece
   end
 
   def moves
-    #to be deteremiend
+    #ducktyping
+  end
+
+  def valid_moves
+    temp_valid_moves = []
+    @possible_moves.each do |move|
+      @board.move(self.position, move)
+      temp_valid_moves << @board.in_check?(self.color)
+      @board.undo_last_move
+    end
+    @possible_moves = temp_valid_moves
   end
 
   def same_color?(other_piece)

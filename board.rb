@@ -33,12 +33,10 @@ class Board
 
   end
 
-  def move!(start_pos, end_pos) # Doesn't check for valid move
+  def move!(start_pos, end_pos) # Doesn't check for valid move, or update pieces' positions
     @previous_move = [start_pos, end_pos]
-    @temp_rm_piece = self[start_pos]
+    @temp_rm_piece = self[end_pos]
     self[start_pos], self[end_pos] = nil, self[start_pos]
-    self[end_pos].position = end_pos
-    @temp_rm_piece.position = nil
   end
 
   def move(start_pos, end_pos)
@@ -47,16 +45,14 @@ class Board
     rescue # StartingPosition => e
       # retry
     end
-    debugger
-    self[start_pos], self[end_pos] = nil, self[start_pos]
+    move!(start_pos, end_pos)
     self[end_pos].position = end_pos
+    @temp_rm_piece.position = nil if @temp_rm_piece.is_a?(Piece)
   end
 
   def undo_last_move
     start_pos, end_pos = @previous_move
     self[end_pos], self[start_pos] = @temp_rm_piece, self[end_pos]
-    self[end_pos].position = end_pos
-    self[start_pos].position = start_pos
   end
 
   def valid_move?(start_pos, end_pos)
@@ -77,7 +73,7 @@ class Board
   end
 
   def checkmate?
-    #non of the player pieces have any valid moves
+    #none of the player pieces have any valid moves
   end
 
   def [](pos)
@@ -94,10 +90,11 @@ class Board
     pieces_in_play(color).each do |piece|
       return piece.position if piece.class == King
     end
+    nil
   end
 
   def pieces_in_play(color)
-    @grid.flatten.compact.select {|piece| piece.color == color}
+    @grid.flatten.compact.select { |piece| piece.color == color }
   end
 
 end

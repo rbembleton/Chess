@@ -17,7 +17,8 @@ class Game
       play_turn
       switch_players
     end
-    #someone won
+    winner = @board.find_king(:white) ? @player_one.name : @player_two.name
+    winner_display(winner)
   end
 
   def play_turn
@@ -36,7 +37,7 @@ class Game
       @board.valid_move?(start_pos, end_pos)
     end
 
-    @board.move!(start_pos, end_pos)
+    @board.move(start_pos, end_pos)
   end
 
   def half_turn(previous, message, &prc)
@@ -59,12 +60,18 @@ class Game
     @display.render
   end
 
+  def winner_display(winner)
+    system("clear")
+    puts  "\n#{winner} wins!\n\n"
+    @display.render
+  end
+
   def switch_players
     @current_player = @current_player == @player_one ? @player_two : @player_one
   end
 
   def won?
-    false
+    return true unless @board.find_king(:black) && @board.find_king(:white)
   end
 
 

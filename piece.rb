@@ -14,7 +14,6 @@ class Piece
 
   def valid_moves
     temp_valid_moves = []
-    p "P: #{self.position}"
     possible_moves.each do |move|
       @board.move!(self.position, move)
       temp_valid_moves << move #unless @board.in_check?(self.color)
@@ -33,9 +32,8 @@ class Piece
     self.color != other_piece.color
   end
 
-  def obstruction?(pos)
+  def obstruction?(pos) # there is a different method for Pawns
     x, y = pos
-    return false unless x.between?(0, 7) && y.between?(0, 7)
     return false if @board[pos].nil?
     return true if self.same_color?(@board[pos])
   end

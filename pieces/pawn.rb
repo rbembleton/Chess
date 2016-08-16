@@ -33,6 +33,12 @@ class Pawn < Piece
     false
   end
 
+  def obstruction?(pos) # for Pawn only, includes opposite color
+    x, y = pos
+    return false if @board[pos].nil?
+    true
+  end
+
 
 
 end

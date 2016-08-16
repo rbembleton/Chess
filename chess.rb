@@ -4,8 +4,8 @@ class Game
   attr_reader :board, :player_one, :player_two, :display, :current_player
 
   def initialize(player_one, player_two)
-    @player_one = Player.new(player_one, :white)
-    @player_two = Player.new(player_two, :black)
+    @player_one = player_one
+    @player_two = player_two
     @board = Board.new
     @display = Display.new(@board)
     @current_player = @player_one
@@ -17,8 +17,10 @@ class Game
       play_turn
       switch_players
     end
-    winner = @board.find_king(:white) ? @player_one.name : @player_two.name
-    winner_display(winner)
+    winner, color = @board.checkmate?(:white) ?
+      [@player_one.name, :white] :
+      [@player_two.name, :black]
+    winner_display(winner, color)
   end
 
   def play_turn
@@ -27,7 +29,7 @@ class Game
       @board[pos] && @board[pos].color == @current_player.color
     end
 
-    while @board[start_pos].possible_moves.length == 0 do
+    while @board[start_pos].valid_moves.length == 0 do
       start_pos = half_turn(nil, "That piece has no valid moves, try again!") do |pos, _|
         @board[pos] && @board[pos].color == @current_player.color
       end
@@ -42,7 +44,7 @@ class Game
 
   def half_turn(previous, message, &prc)
     position = nil
-    previous_txt = previous ? @board[previous].class : "None was selected"
+    previous_txt = previous ? @board[previous].class : "Nothing is selected"
     until position && prc.call(position, previous)
       turn_display(previous, previous_txt, message)
       position = @display.get_input
@@ -54,16 +56,20 @@ class Game
     system("clear")
     puts  "Player: #{@current_player.name}, Color: #{@current_player.color.capitalize}"
     puts "Selected: #{previous_txt}"
-    puts "Possible Moves: #{@board[previous].possible_moves}" if previous
+    # puts "Possible Moves: #{@board[previous].possible_moves}" if previous   ## FOR TESTING
+    # puts "Valid Moves: #{@board[previous].valid_moves}" if previous         ## FOR TESTING
     puts "#{message}" if message
-    puts " " unless previous || message
+    puts " " unless message #|| previous                                      ## FOR TESTING
     @display.render
+    puts "#{@current_player.color.capitalize} is in Check!" if @board.in_check?(@current_player.color)
+
   end
 
-  def winner_display(winner)
+  def winner_display(winner, color)
     system("clear")
-    puts  "\n#{winner} wins!\n\n"
+    puts  "\n#{color.capitalize} is in Checkmate. #{winner} wins!\n\n"
     @display.render
+    puts "\n\n"
   end
 
   def switch_players
@@ -71,6 +77,7 @@ class Game
   end
 
   def won?
+    return true if @board.checkmate?(@current_player.color)
     return true unless @board.find_king(:black) && @board.find_king(:white)
   end
 
@@ -78,11 +85,24 @@ class Game
 end
 
 if $PROGRAM_NAME == __FILE__
-  # puts "Welcome to Chess! What is your name?"
-  # name = gets.chomp
-  # puts "Nice to meet you, #{name}! Press ENTER to start the game :D"
-  # input = gets
+  puts "Welcome to Chess! What is your name?"
+  name = gets.chomp
+  player_one = HumanPlayer.new(name, :white)
 
-  chess_game = Game.new("Bob the Drag Queen","RB")
+  puts "Nice to meet you, #{name}! Do you want to play against me, the computer? (y or n)"
+  computer_y = gets.chomp
+  if computer_y.downcase == 'y'
+    player_two = ComputerPlayer.new(:black)
+  else
+    puts "What is the name of the second player?"
+    name = gets.chomp
+    player_two = HumanPlayer.new(name, :black)
+    puts "Welcome, #{name}!"
+  end
+
+  puts "Alright, press any key to get started."
+  gets
+
+  chess_game = Game.new(player_one, player_two)
   chess_game.play
 end

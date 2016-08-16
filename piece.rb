@@ -12,11 +12,11 @@ class Piece
     raise "moves must be implemented in the child class"
   end
 
-  def valid_moves
+  def valid_moves # King has his own
     temp_valid_moves = []
     possible_moves.each do |move|
       @board.move!(self.position, move)
-      temp_valid_moves << move #unless @board.in_check?(self.color)
+      temp_valid_moves << move unless @board.in_check?(self.color)
       @board.undo_last_move
     end
     temp_valid_moves

@@ -1,4 +1,6 @@
 require_relative "player"
+require_relative "players/computer_player"
+require_relative "players/human_player"
 require_relative "board"
 require_relative "cursorable"
 require_relative "display"

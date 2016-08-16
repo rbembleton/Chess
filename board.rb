@@ -72,8 +72,10 @@ class Board
     false
   end
 
-  def checkmate?
-    #none of the player pieces have any valid moves
+  def checkmate?(current_color)
+    return pieces_in_play(current_color).all? do |piece|
+      piece.valid_moves.length == 0
+    end
   end
 
   def [](pos)

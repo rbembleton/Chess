@@ -20,5 +20,3 @@ require_relative "pieces/rook"
 
 
 require 'byebug'
-# require_relative "chess"
-# require_relative "players/"

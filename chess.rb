@@ -29,8 +29,11 @@ class Game
       @board[pos] && @board[pos].color == @current_player.color
     end
 
-    while @board[start_pos].valid_moves.length == 0 do
-      start_pos = half_turn(nil, "That piece has no valid moves, try again!") do |pos, _|
+    while (start_pos == :undo) || (@board[start_pos].valid_moves.length == 0) do
+      error_message = start_pos == :undo ?
+        "Nothing is currently selected, please make a selection first" :
+        "That piece has no valid moves, try again!"
+      start_pos = half_turn(nil, error_message) do |pos, _|
         @board[pos] && @board[pos].color == @current_player.color
       end
     end
@@ -39,15 +42,19 @@ class Game
       @board.valid_move?(start_pos, end_pos)
     end
 
-    @board.move(start_pos, end_pos)
+    if end_pos == :undo
+      play_turn #starts play_turn again with no selection
+    else
+      @board.move(start_pos, end_pos)
+    end
   end
 
   def half_turn(previous, message, &prc)
     position = nil
     previous_txt = previous ? @board[previous].class : "Nothing is selected"
-    until position && prc.call(position, previous)
+    until position && ((position == :undo) || prc.call(position, previous))
       turn_display(previous, previous_txt, message)
-      position = @display.get_input
+      position = @display.get_input ## either pos or :undo
     end
     position
   end
@@ -63,6 +70,7 @@ class Game
     @display.render
     puts "#{@current_player.color.capitalize} is in Check!" if @board.in_check?(@current_player.color)
 
+    puts "\n\nControls:\nMove: LEFT, RIGHT, UP, DOWN or A, D, W, S\nSelect: ENTER or SPACE\nDeselect: BACKSPACE"
   end
 
   def winner_display(winner, color)
@@ -85,6 +93,7 @@ class Game
 end
 
 if $PROGRAM_NAME == __FILE__
+  system("clear")
   puts "Welcome to Chess! What is your name?"
   name = gets.chomp
   player_one = HumanPlayer.new(name, :white)

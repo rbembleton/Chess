@@ -22,33 +22,41 @@ class Game
 
   def play_turn
 
-    start_pos = half_turn(nil) do |pos, _|
+    start_pos = half_turn(nil, nil) do |pos, _|
       @board[pos] && @board[pos].color == @current_player.color
     end
-    # debugger
-    end_pos = half_turn(start_pos) do |end_pos, start_pos|
-      # p "S: #{start_pos}  E: #{end_pos}"
+
+    while @board[start_pos].possible_moves.length == 0 do
+      start_pos = half_turn(nil, "That piece has no valid moves, try again!") do |pos, _|
+        @board[pos] && @board[pos].color == @current_player.color
+      end
+    end
+
+    end_pos = half_turn(start_pos, nil) do |end_pos, start_pos|
       @board.valid_move?(start_pos, end_pos)
     end
 
     @board.move!(start_pos, end_pos)
   end
 
-  def half_turn(previous, &prc)
+  def half_turn(previous, message, &prc)
     position = nil
     previous_txt = previous ? @board[previous].class : "None was selected"
     until position && prc.call(position, previous)
-
-      system("clear")
-
-      puts  "Player: #{@current_player.name}, Color: #{@current_player.color.capitalize}"
-      puts "Selected: #{previous_txt}"
-      puts "Possible Moves: #{@board[previous].moves}" if previous
-      @display.render
-
+      turn_display(previous, previous_txt, message)
       position = @display.get_input
     end
     position
+  end
+
+  def turn_display(previous, previous_txt, message)
+    system("clear")
+    puts  "Player: #{@current_player.name}, Color: #{@current_player.color.capitalize}"
+    puts "Selected: #{previous_txt}"
+    puts "Possible Moves: #{@board[previous].possible_moves}" if previous
+    puts "#{message}" if message
+    puts " " unless previous || message
+    @display.render
   end
 
   def switch_players
@@ -56,7 +64,6 @@ class Game
   end
 
   def won?
-    #
     false
   end
 
@@ -64,17 +71,11 @@ class Game
 end
 
 if $PROGRAM_NAME == __FILE__
-  our_chess = Game.new("RB","Mac")
-  our_chess.play
-  #
-  # b = Board.new
-  #
-  #
-  # d = Display.new(b)
-  #
-  # # debugger
-  # while true
-  #   d.render
-  # end
+  # puts "Welcome to Chess! What is your name?"
+  # name = gets.chomp
+  # puts "Nice to meet you, #{name}! Press ENTER to start the game :D"
+  # input = gets
 
+  chess_game = Game.new("Bob the Drag Queen","RB")
+  chess_game.play
 end

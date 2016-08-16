@@ -5,11 +5,6 @@ class Board
     Array.new(8) { Array.new(8) }
   end
 
-  # def self.default_chess_board
-  #   default_board = Board.new
-  #   default_board.place_pieces
-  # end
-
   def initialize(grid = default_grid)
     @grid = grid
     place_pieces
@@ -38,40 +33,34 @@ class Board
 
   end
 
-  def move!(start_pos, end_pos)
+  def move!(start_pos, end_pos) # Doesn't check for valid move
     @previous_move = [start_pos, end_pos]
+    @temp_rm_piece = self[start_pos]
     self[start_pos], self[end_pos] = nil, self[start_pos]
     self[end_pos].position = end_pos
+    @temp_rm_piece.position = nil
   end
 
   def move(start_pos, end_pos)
     begin
-      # p "S: #{start_pos}  E: #{end_pos}"
       valid_move?(start_pos, end_pos)
     rescue # StartingPosition => e
       # retry
     end
-    @previous_move = [start_pos, end_pos]
+    debugger
     self[start_pos], self[end_pos] = nil, self[start_pos]
     self[end_pos].position = end_pos
   end
 
   def undo_last_move
     start_pos, end_pos = @previous_move
-    move(end_pos, start_pos)
+    self[end_pos], self[start_pos] = @temp_rm_piece, self[end_pos]
+    self[end_pos].position = end_pos
+    self[start_pos].position = start_pos
   end
 
   def valid_move?(start_pos, end_pos)
-    # debugger
-    # p "S: #{start_pos}  E: #{end_pos}"
-    # p self[start_pos].valid_moves#.include?(end_pos)
     self[start_pos].valid_moves.include?(end_pos)
-
-    # if self[start_pos].nil?
-    #   raise StartingPosition.new ("There is no piece there")
-    # end
-    # self[start].valid_move?
-
   end
 
   def in_bounds?(pos)
@@ -82,7 +71,7 @@ class Board
     pos_king = find_king(current_color)
     other_color = current_color == :black ? :white : :black
     pieces_in_play(other_color).any? do |piece|
-      return true if piece.moves.include?(pos_king)
+      return true if piece.possible_moves.include?(pos_king)
     end
     false
   end

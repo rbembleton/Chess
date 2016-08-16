@@ -1,21 +1,21 @@
-class SlidingPiece < Piece
-#Bishop Rook Queen
+class SlidingPiece < Piece #Bishop, Rook, Queen
+
   def move_dirs
 
   end
 
-  def moves
-    possible_moves = []
+  def possible_moves
+    moves = []
     move_dirs.each do |dx, dy|
-      possible_moves += find_move(dx, dy)
+      moves += find_move(dx, dy)
     end
-    possible_moves
+    moves
   end
 
   def find_move(dx, dy)
     x, y = @position
     temp_moves = []
-    until obstruction?([(x + dx), (y + dy)])
+    until out_of_bounds?([(x + dx), (y + dy)]) || obstruction?([(x + dx), (y + dy)])
       x += dx
       y += dy
       temp_moves << [x, y]
@@ -24,9 +24,5 @@ class SlidingPiece < Piece
     temp_moves
   end
 
-
-  def method_name
-
-  end
 
 end

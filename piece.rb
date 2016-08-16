@@ -8,14 +8,14 @@ class Piece
     @color = color
   end
 
-  def moves
+  def possible_moves
     raise "moves must be implemented in the child class"
   end
 
   def valid_moves
     temp_valid_moves = []
-    # p "P: #{self.position}"
-    moves.each do |move|
+    p "P: #{self.position}"
+    possible_moves.each do |move|
       @board.move!(self.position, move)
       temp_valid_moves << move #unless @board.in_check?(self.color)
       @board.undo_last_move
@@ -39,4 +39,10 @@ class Piece
     return false if @board[pos].nil?
     return true if self.same_color?(@board[pos])
   end
+
+  def out_of_bounds?(pos)
+    x, y = pos
+    x < 0 || x > 7 || y < 0 || y > 7
+  end
+
 end

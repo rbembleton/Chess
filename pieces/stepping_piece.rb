@@ -1,11 +1,11 @@
-class SteppingPiece < Piece
+class SteppingPiece < Piece # King, Knight
 
-  def moves
-    possible_moves = []
+  def possible_moves
+    moves = []
     x, y = @position
     deltas.each do |dx, dy|
-      possible_moves << [dx + x, dy + y] unless obstruction?(dx + x, dy + y)
+      moves << [dx + x, dy + y] unless out_of_bounds?([dx + x, dy + y]) || obstruction?([dx + x, dy + y])
     end
-    possible_moves
+    moves
   end
 end

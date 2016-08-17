@@ -17,7 +17,7 @@ class Game
       play_turn
       switch_players
     end
-    winner, color = @board.checkmate?(:white) ?
+    winner, color = @board.checkmate?(:black) ?
       [@player_one.name, :white] :
       [@player_two.name, :black]
     winner_display(winner, color)
@@ -54,7 +54,8 @@ class Game
     previous_txt = previous ? @board[previous].class : "Nothing is selected"
     until position && ((position == :undo) || prc.call(position, previous))
       turn_display(previous, previous_txt, message)
-      position = @display.get_input ## either pos or :undo
+      position = @current_player.get_input(@display, @board, previous) ## either pos or :undo
+      # position = @display.get_input ## either pos or :undo
     end
     position
   end

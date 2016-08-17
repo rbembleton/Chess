@@ -37,4 +37,5 @@ Who needs friends when you have a computer to play Chess against?!
 ![computer_v_human](docs/computer_v_human.png)
 
 Follow the on screen controls to navigate, and enjoy!
+(For optimal game play zoom in using ⌘+)
 ![main_page](docs/main_page.png)

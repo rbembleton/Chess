@@ -37,5 +37,55 @@ Who needs friends when you have a computer to play Chess against?!
 ![computer_v_human](docs/computer_v_human.png)
 
 Follow the on screen controls to navigate, and enjoy!
-(For optimal game play zoom in using ⌘+) 
+(For optimal game play zoom in using ⌘+)
 ![main_page](docs/main_page.png)
+
+
+## Implementation
+
+To check for valid moves Chess uses to `move` methods: one which will move regardless of whether the move is valid or not, and the other which will check that the move is valid before proceeding.
+
+```ruby
+## board.rb
+
+def move!(start_pos, end_pos) # Doesn't check for valid move, or update pieces' positions
+  @previous_move = [start_pos, end_pos]
+  @temp_rm_piece = self[end_pos]
+  self[start_pos], self[end_pos] = nil, self[start_pos]
+end
+
+def move(start_pos, end_pos)
+  begin
+    valid_move?(start_pos, end_pos)
+  rescue StartingPosition => e
+    retry
+  end
+  move!(start_pos, end_pos)
+  self[end_pos].position = end_pos
+  @temp_rm_piece.position = nil if @temp_rm_piece.is_a?(Piece)
+end
+
+```
+
+This is necessary because `valid_move` calls the `piece::valid_moves` which then calls `move!` to check whether a move is valid or not, and so this prevents it from calling itself and entering into an infinite loop.
+
+```ruby
+## board.rb
+
+def valid_move?(start_pos, end_pos)
+  self[start_pos].valid_moves.include?(end_pos)
+end
+
+## piece.rb
+
+def valid_moves # King has his own
+  temp_valid_moves = []
+  possible_moves.each do |move|
+    @board.move!(self.position, move)
+    temp_valid_moves << move unless @board.in_check?(self.color)
+    @board.undo_last_move
+  end
+  temp_valid_moves
+end
+
+```
